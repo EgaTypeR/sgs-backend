@@ -1,8 +1,8 @@
-require('dotenv').config()
+require('dotenv').config();
 const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
 const connectToMongoDB = require('./lib/db');
-const productRouter = require('./router/productRouter')
+const productRouter = require('./router/productRouter');
 
 const app = express();
 
@@ -11,14 +11,19 @@ const corsOptions = {
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: false,
 };
-app.use(express.json())
-app.use(cors(corsOptions))
-app.use('/product',productRouter)
+app.use(express.json());
+app.use(cors(corsOptions));
+app.use('/product', productRouter);
 
-const PORT = process.env.PORT; // Set a port (here, 3000) or use an environment variable for production
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 3000; // Set a default port or use an environment variable for production
 
-const db = connectToMongoDB()
-
+// Connect to MongoDB
+connectToMongoDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+  });
